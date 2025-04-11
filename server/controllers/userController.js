@@ -51,6 +51,8 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
     return next(new ErrorHandler("Invalid Email or Password", 401));
   }
 
+  req.session.user = { id: 1, email };
+
   sendToken(user, 201, res);
 });
 
@@ -59,6 +61,12 @@ exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
   res.cookie("token", null, {
     expires: new Date(Date.now()),
     httpOnly: true,
+  });
+
+  req.session.destroy((err) => {
+    
+    res.clearCookie('connect.sid');
+
   });
 
   res.status(200).json({
@@ -70,6 +78,12 @@ exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
 // Get User Details
 exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id);
+
+  if (req.session.email) {
+    console.log(`Welcome, ${req.session.user.name}`);
+  } else {
+    console.log('Please log in first.');
+  }
 
   res.status(200).json({
     success: true,
