@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const userRouter = require("./routes/userRoute");
+const session = require('express-session');
+
 
 const app = express();
 
@@ -17,6 +19,13 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/user', userRouter);
 app.use(fileUpload());
+
+app.use(session({
+  secret: 'secret-key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { maxAge: 3600000 }
+}));
 
 // deployment
 __dirname = path.resolve();
